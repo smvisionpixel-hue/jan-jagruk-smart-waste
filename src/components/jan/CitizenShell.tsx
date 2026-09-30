@@ -38,7 +38,9 @@ export function CitizenShell({ children }: { children: React.ReactNode }) {
                 to={n.to}
                 activeOptions={{ exact: n.to === "/" }}
                 activeProps={{ className: "bg-secondary text-secondary-foreground" }}
-                className={cn("rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted")}
+                className={cn(
+                  "rounded-full px-3 py-2 text-sm font-medium text-muted-foreground hover:bg-muted",
+                )}
               >
                 {n.label}
               </Link>
@@ -73,7 +75,11 @@ export function CitizenShell({ children }: { children: React.ReactNode }) {
                 {n.label}
               </Link>
             ))}
-            <Link to="/admin" onClick={() => setOpen(false)} className="rounded-lg px-3 py-2 text-sm font-semibold text-primary">
+            <Link
+              to="/admin"
+              onClick={() => setOpen(false)}
+              className="rounded-lg px-3 py-2 text-sm font-semibold text-primary"
+            >
               Admin Console
             </Link>
           </nav>
@@ -83,7 +89,9 @@ export function CitizenShell({ children }: { children: React.ReactNode }) {
       <footer className="border-t bg-card">
         <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-6 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>© {new Date().getFullYear()} Jan Jagruk · Civic waste intelligence</p>
-          <p className="text-xs">AI-assisted prototype · simulated detection layer, not connected to live AI or GPS services</p>
+          <p className="text-xs">
+            Jan Jagruk demo · server-side report clustering · Browser GPS Demo Tracking
+          </p>
         </div>
       </footer>
     </div>
@@ -108,7 +116,9 @@ export function PageHeader({
           <p className="text-xs font-semibold uppercase tracking-widest text-primary">{eyebrow}</p>
         ) : null}
         <h1 className="mt-1 text-3xl font-bold tracking-tight text-foreground">{title}</h1>
-        {description ? <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{description}</p> : null}
+        {description ? (
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{description}</p>
+        ) : null}
         {action ? <div className="mt-4">{action}</div> : null}
       </div>
     </div>

@@ -34,7 +34,9 @@ function AdminLayout() {
           </span>
           <span className="leading-tight">
             <span className="block text-sm font-bold">Jan Jagruk</span>
-            <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">Admin Console</span>
+            <span className="block text-[10px] uppercase tracking-wider text-muted-foreground">
+              Admin Console
+            </span>
           </span>
         </Link>
         <nav className="mt-6 grid gap-1">
@@ -43,7 +45,9 @@ function AdminLayout() {
               key={n.to}
               to={n.to}
               activeOptions={{ exact: n.exact }}
-              activeProps={{ className: "bg-sidebar-accent text-sidebar-accent-foreground font-semibold" }}
+              activeProps={{
+                className: "bg-sidebar-accent text-sidebar-accent-foreground font-semibold",
+              }}
               className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-sidebar-accent/60"
             >
               <n.icon className="h-4 w-4" />
@@ -52,7 +56,8 @@ function AdminLayout() {
           ))}
         </nav>
         <div className="mt-auto rounded-xl border bg-card p-3 text-xs text-muted-foreground">
-          AI-assisted prototype. Detection, GPS and image similarity are simulated.
+          Detection is server-side. GPS is clearly labeled Browser GPS Demo Tracking until a vehicle
+          telematics service is connected.
         </div>
       </aside>
 
