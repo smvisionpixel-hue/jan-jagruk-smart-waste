@@ -19,6 +19,8 @@ import { Route as ReportRouteImport } from './routes/report'
 import { Route as SegregateRouteImport } from './routes/segregate'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminDetectionRouteImport } from './routes/admin.detection'
+import { Route as AdminIncidentsIndexRouteImport } from './routes/admin.incidents.index'
+import { Route as AdminIncidentsIdRouteImport } from './routes/admin.incidents.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,6 +72,16 @@ const AdminDetectionRoute = AdminDetectionRouteImport.update({
   path: '/detection',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminIncidentsIndexRoute = AdminIncidentsIndexRouteImport.update({
+  id: '/incidents/',
+  path: '/incidents/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminIncidentsIdRoute = AdminIncidentsIdRouteImport.update({
+  id: '/incidents/$id',
+  path: '/incidents/$id',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -82,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/segregate': typeof SegregateRoute
   '/admin/detection': typeof AdminDetectionRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/incidents/$id': typeof AdminIncidentsIdRoute
+  '/admin/incidents/': typeof AdminIncidentsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -93,6 +107,8 @@ export interface FileRoutesByTo {
   '/segregate': typeof SegregateRoute
   '/admin/detection': typeof AdminDetectionRoute
   '/admin': typeof AdminIndexRoute
+  '/admin/incidents/$id': typeof AdminIncidentsIdRoute
+  '/admin/incidents': typeof AdminIncidentsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,6 +122,8 @@ export interface FileRoutesById {
   '/segregate': typeof SegregateRoute
   '/admin/detection': typeof AdminDetectionRoute
   '/admin/': typeof AdminIndexRoute
+  '/admin/incidents/$id': typeof AdminIncidentsIdRoute
+  '/admin/incidents/': typeof AdminIncidentsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -120,6 +138,8 @@ export interface FileRouteTypes {
     | '/segregate'
     | '/admin/detection'
     | '/admin/'
+    | '/admin/incidents/$id'
+    | '/admin/incidents/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -131,6 +151,8 @@ export interface FileRouteTypes {
     | '/segregate'
     | '/admin/detection'
     | '/admin'
+    | '/admin/incidents/$id'
+    | '/admin/incidents'
   id:
     | '__root__'
     | '/'
@@ -143,6 +165,8 @@ export interface FileRouteTypes {
     | '/segregate'
     | '/admin/detection'
     | '/admin/'
+    | '/admin/incidents/$id'
+    | '/admin/incidents/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -228,17 +252,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDetectionRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/incidents/': {
+      id: '/admin/incidents/'
+      path: '/incidents'
+      fullPath: '/admin/incidents/'
+      preLoaderRoute: typeof AdminIncidentsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/incidents/$id': {
+      id: '/admin/incidents/$id'
+      path: '/incidents/$id'
+      fullPath: '/admin/incidents/$id'
+      preLoaderRoute: typeof AdminIncidentsIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
 interface AdminRouteChildren {
   AdminDetectionRoute: typeof AdminDetectionRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminIncidentsIdRoute: typeof AdminIncidentsIdRoute
+  AdminIncidentsIndexRoute: typeof AdminIncidentsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminDetectionRoute: AdminDetectionRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminIncidentsIdRoute: AdminIncidentsIdRoute,
+  AdminIncidentsIndexRoute: AdminIncidentsIndexRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
