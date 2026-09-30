@@ -1,4 +1,4 @@
-# Pixel Perfect
+# Jan Jagruk
 
 Implement exactly the screenshot and nothing else
 
