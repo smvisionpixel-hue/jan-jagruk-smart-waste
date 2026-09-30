@@ -18,7 +18,9 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as SegregateRouteImport } from './routes/segregate'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminDetectionRouteImport } from './routes/admin.detection'
+import { Route as AdminHotspotsRouteImport } from './routes/admin.hotspots'
 import { Route as AdminIncidentsIndexRouteImport } from './routes/admin.incidents.index'
 import { Route as AdminIncidentsIdRouteImport } from './routes/admin.incidents.$id'
 
@@ -67,9 +69,19 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminAnalyticsRoute = AdminAnalyticsRouteImport.update({
+  id: '/analytics',
+  path: '/analytics',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminDetectionRoute = AdminDetectionRouteImport.update({
   id: '/detection',
   path: '/detection',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminHotspotsRoute = AdminHotspotsRouteImport.update({
+  id: '/hotspots',
+  path: '/hotspots',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminIncidentsIndexRoute = AdminIncidentsIndexRouteImport.update({
@@ -92,7 +104,9 @@ export interface FileRoutesByFullPath {
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/detection': typeof AdminDetectionRoute
+  '/admin/hotspots': typeof AdminHotspotsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/incidents/$id': typeof AdminIncidentsIdRoute
   '/admin/incidents/': typeof AdminIncidentsIndexRoute
@@ -105,7 +119,9 @@ export interface FileRoutesByTo {
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/detection': typeof AdminDetectionRoute
+  '/admin/hotspots': typeof AdminHotspotsRoute
   '/admin': typeof AdminIndexRoute
   '/admin/incidents/$id': typeof AdminIncidentsIdRoute
   '/admin/incidents': typeof AdminIncidentsIndexRoute
@@ -120,7 +136,9 @@ export interface FileRoutesById {
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
+  '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/detection': typeof AdminDetectionRoute
+  '/admin/hotspots': typeof AdminHotspotsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/incidents/$id': typeof AdminIncidentsIdRoute
   '/admin/incidents/': typeof AdminIncidentsIndexRoute
@@ -136,7 +154,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/report'
     | '/segregate'
+    | '/admin/analytics'
     | '/admin/detection'
+    | '/admin/hotspots'
     | '/admin/'
     | '/admin/incidents/$id'
     | '/admin/incidents/'
@@ -149,7 +169,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/report'
     | '/segregate'
+    | '/admin/analytics'
     | '/admin/detection'
+    | '/admin/hotspots'
     | '/admin'
     | '/admin/incidents/$id'
     | '/admin/incidents'
@@ -163,7 +185,9 @@ export interface FileRouteTypes {
     | '/profile'
     | '/report'
     | '/segregate'
+    | '/admin/analytics'
     | '/admin/detection'
+    | '/admin/hotspots'
     | '/admin/'
     | '/admin/incidents/$id'
     | '/admin/incidents/'
@@ -245,11 +269,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/analytics': {
+      id: '/admin/analytics'
+      path: '/analytics'
+      fullPath: '/admin/analytics'
+      preLoaderRoute: typeof AdminAnalyticsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/detection': {
       id: '/admin/detection'
       path: '/detection'
       fullPath: '/admin/detection'
       preLoaderRoute: typeof AdminDetectionRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/hotspots': {
+      id: '/admin/hotspots'
+      path: '/hotspots'
+      fullPath: '/admin/hotspots'
+      preLoaderRoute: typeof AdminHotspotsRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/incidents/': {
@@ -270,14 +308,18 @@ declare module '@tanstack/react-router' {
 }
 
 interface AdminRouteChildren {
+  AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminDetectionRoute: typeof AdminDetectionRoute
+  AdminHotspotsRoute: typeof AdminHotspotsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminIncidentsIdRoute: typeof AdminIncidentsIdRoute
   AdminIncidentsIndexRoute: typeof AdminIncidentsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
+  AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminDetectionRoute: AdminDetectionRoute,
+  AdminHotspotsRoute: AdminHotspotsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminIncidentsIdRoute: AdminIncidentsIdRoute,
   AdminIncidentsIndexRoute: AdminIncidentsIndexRoute,
