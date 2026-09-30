@@ -11,8 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as HotspotsRouteImport } from './routes/hotspots'
 import { Route as MyReportsRouteImport } from './routes/my-reports'
 import { Route as ReportRouteImport } from './routes/report'
+import { Route as SegregateRouteImport } from './routes/segregate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -22,6 +24,11 @@ const IndexRoute = IndexRouteImport.update({
 const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HotspotsRoute = HotspotsRouteImport.update({
+  id: '/hotspots',
+  path: '/hotspots',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MyReportsRoute = MyReportsRouteImport.update({
@@ -34,39 +41,61 @@ const ReportRoute = ReportRouteImport.update({
   path: '/report',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SegregateRoute = SegregateRouteImport.update({
+  id: '/segregate',
+  path: '/segregate',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
   '/report': typeof ReportRoute
+  '/segregate': typeof SegregateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
   '/report': typeof ReportRoute
+  '/segregate': typeof SegregateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/dashboard': typeof DashboardRoute
+  '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
   '/report': typeof ReportRoute
+  '/segregate': typeof SegregateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dashboard' | '/my-reports' | '/report'
+  fullPaths:
+    '/' | '/dashboard' | '/hotspots' | '/my-reports' | '/report' | '/segregate'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dashboard' | '/my-reports' | '/report'
-  id: '__root__' | '/' | '/dashboard' | '/my-reports' | '/report'
+  to:
+    '/' | '/dashboard' | '/hotspots' | '/my-reports' | '/report' | '/segregate'
+  id:
+    | '__root__'
+    | '/'
+    | '/dashboard'
+    | '/hotspots'
+    | '/my-reports'
+    | '/report'
+    | '/segregate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   DashboardRoute: typeof DashboardRoute
+  HotspotsRoute: typeof HotspotsRoute
   MyReportsRoute: typeof MyReportsRoute
   ReportRoute: typeof ReportRoute
+  SegregateRoute: typeof SegregateRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -85,6 +114,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/hotspots': {
+      id: '/hotspots'
+      path: '/hotspots'
+      fullPath: '/hotspots'
+      preLoaderRoute: typeof HotspotsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/my-reports': {
       id: '/my-reports'
       path: '/my-reports'
@@ -99,14 +135,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ReportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/segregate': {
+      id: '/segregate'
+      path: '/segregate'
+      fullPath: '/segregate'
+      preLoaderRoute: typeof SegregateRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   DashboardRoute: DashboardRoute,
+  HotspotsRoute: HotspotsRoute,
   MyReportsRoute: MyReportsRoute,
   ReportRoute: ReportRoute,
+  SegregateRoute: SegregateRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
