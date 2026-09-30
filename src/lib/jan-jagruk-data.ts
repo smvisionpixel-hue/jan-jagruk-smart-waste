@@ -18,18 +18,10 @@ export const STATUS_FLOW: { key: StatusKey; label: string }[] = [
 ];
 
 export const WASTE_CATEGORIES = [
-  "Wet Waste",
-  "Dry Waste",
-  "Mixed Waste",
-  "Plastic Waste",
-  "E-Waste",
-  "Hazardous Waste",
-  "Construction Waste",
   "Roadside Garbage",
   "Overflowing Bin",
   "Missed Collection",
   "Illegal Dumping",
-  "Other",
 ] as const;
 
 export type WasteCategory = (typeof WASTE_CATEGORIES)[number];
@@ -304,76 +296,18 @@ export const WEEKLY_TREND = [
 ];
 
 export const PICKUP_QUEUE = [
-  {
-    id: "PK-2041",
-    incident: "#118",
-    area: "Vijay Nagar",
-    crew: "Crew A",
-    eta: "Today 16:00",
-    state: "In Progress",
-  },
-  {
-    id: "PK-2042",
-    incident: "#131",
-    area: "Kakadeo",
-    crew: "Crew C",
-    eta: "Today 17:30",
-    state: "Assigned",
-  },
-  {
-    id: "PK-2043",
-    incident: "#104",
-    area: "Main Road",
-    crew: "Unassigned",
-    eta: "—",
-    state: "Awaiting Assignment",
-  },
-  {
-    id: "PK-2038",
-    incident: "#096",
-    area: "Swaroop Nagar",
-    crew: "Crew B",
-    eta: "Completed",
-    state: "Resolved",
-  },
+  { id: "PK-2041", incident: "#118", area: "Vijay Nagar", crew: "Crew A", eta: "Today 16:00", state: "In Progress" },
+  { id: "PK-2042", incident: "#131", area: "Kakadeo", crew: "Crew C", eta: "Today 17:30", state: "Assigned" },
+  { id: "PK-2043", incident: "#104", area: "Main Road", crew: "Unassigned", eta: "—", state: "Awaiting Assignment" },
+  { id: "PK-2038", incident: "#096", area: "Swaroop Nagar", crew: "Crew B", eta: "Completed", state: "Resolved" },
 ];
 
 export const POINTS_AUDIT = [
-  {
-    user: "Aarav Sharma",
-    action: "Segregation verified",
-    points: 20,
-    time: "Today 12:40",
-    state: "Approved",
-  },
-  {
-    user: "Neha Verma",
-    action: "Waste report verified",
-    points: 15,
-    time: "Today 11:12",
-    state: "Approved",
-  },
-  {
-    user: "Rohit Yadav",
-    action: "Duplicate report",
-    points: -5,
-    time: "Today 10:05",
-    state: "Adjusted",
-  },
-  {
-    user: "Simran Kaur",
-    action: "Segregation verified",
-    points: 20,
-    time: "Yesterday 19:22",
-    state: "Approved",
-  },
-  {
-    user: "Imran Ali",
-    action: "Hotspot confirmation",
-    points: 10,
-    time: "Yesterday 16:48",
-    state: "Pending",
-  },
+  { user: "Aarav Sharma", action: "Segregation verified", points: 20, time: "Today 12:40", state: "Approved" },
+  { user: "Neha Verma", action: "Waste report verified", points: 15, time: "Today 11:12", state: "Approved" },
+  { user: "Rohit Yadav", action: "Duplicate report", points: -5, time: "Today 10:05", state: "Adjusted" },
+  { user: "Simran Kaur", action: "Segregation verified", points: 20, time: "Yesterday 19:22", state: "Approved" },
+  { user: "Imran Ali", action: "Hotspot confirmation", points: 10, time: "Yesterday 16:48", state: "Pending" },
 ];
 
 export const priorityLabel: Record<Priority, string> = {

@@ -7,14 +7,6 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
-  vite: {
-    // Replit Preview proxies requests through a dynamic host. Keep local
-    // development and deployment compatible by allowing Vite's host checks
-    // to accept the proxy host as well as localhost.
-    server: {
-      allowedHosts: true,
-    },
-  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

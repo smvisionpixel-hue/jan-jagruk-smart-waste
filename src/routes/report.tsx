@@ -1,9 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
 import { Crosshair, Flame, ImagePlus, Loader2, Radar } from "lucide-react";
 import { CitizenShell, PageHeader } from "@/components/jan/CitizenShell";
-import { DetectionFlow, StatusBadge } from "@/components/jan/bits";
+import { DetectionFlow, PrototypeNote, StatusBadge } from "@/components/jan/bits";
 import { MapCanvas, MapPin as Pin } from "@/components/jan/SimMap";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,22 +15,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { STATUS_FLOW, WASTE_CATEGORIES } from "@/lib/jan-jagruk-data";
-import { createWasteReport } from "@/lib/report.server";
+import { HERO_INCIDENT, STATUS_FLOW, WASTE_CATEGORIES } from "@/lib/jan-jagruk-data";
 
 export const Route = createFileRoute("/report")({
   head: () => ({
     meta: [
       { title: "Report Waste — Jan Jagruk" },
-      {
-        name: "description",
-        content: "Report a waste issue with location, category and photo evidence.",
-      },
+      { name: "description", content: "Report a waste issue with location, category and photo evidence." },
       { property: "og:title", content: "Report Waste — Jan Jagruk" },
-      {
-        property: "og:description",
-        content: "Submit a waste report and see related reports detected nearby.",
-      },
+      { property: "og:description", content: "Submit a waste report and see related reports detected nearby." },
     ],
   }),
   component: ReportPage,
@@ -39,74 +31,17 @@ export const Route = createFileRoute("/report")({
 
 type Scan = "idle" | "scanning" | "found" | "incident";
 
-function readPhoto(file: File) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader();
-    reader.addEventListener("load", () => resolve(String(reader.result)));
-    reader.addEventListener("error", () => reject(new Error("Unable to read the selected image.")));
-    reader.readAsDataURL(file);
-  });
-}
-
 function ReportPage() {
-  const submitReport = useServerFn(createWasteReport);
-  const [located, setLocated] = useState<{ latitude: number; longitude: number } | null>(null);
+  const [located, setLocated] = useState(false);
   const [photo, setPhoto] = useState<string | null>(null);
-  const [category, setCategory] = useState<string>("Wet Waste");
-  const [severity, setSeverity] = useState<"low" | "medium" | "high" | "critical">("medium");
-  const [landmark, setLandmark] = useState("");
-  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState<string>("Roadside Garbage");
   const [scan, setScan] = useState<Scan>("idle");
-  const [result, setResult] = useState<Awaited<ReturnType<typeof createWasteReport>> | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
 
-  const locate = () => {
-    if (!navigator.geolocation) {
-      setError("This browser does not provide geolocation.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocated({ latitude: position.coords.latitude, longitude: position.coords.longitude });
-        setError(null);
-      },
-      () => setError("Location permission was not granted. Enable it and try again."),
-      { enableHighAccuracy: true, timeout: 10_000 },
-    );
-  };
-
-  const submit = async () => {
-    if (!located) {
-      setError("Use your current location before submitting the report.");
-      return;
-    }
-    if (description.trim().length < 3) {
-      setError("Add a short description so the operations team can verify the report.");
-      return;
-    }
-
-    setError(null);
+  const detect = () => {
     setScan("scanning");
-    try {
-      const next = await submitReport({
-        data: {
-          category,
-          severity,
-          landmark,
-          description,
-          latitude: located.latitude,
-          longitude: located.longitude,
-          photoDataUrl: photo ?? undefined,
-        },
-      });
-      setResult(next);
-      setScan(next.incident ? "incident" : "found");
-    } catch (submissionError) {
-      setScan("idle");
-      setError(
-        submissionError instanceof Error ? submissionError.message : "Unable to submit the report.",
-      );
-    }
+    window.setTimeout(() => setScan("found"), 1200);
+    window.setTimeout(() => setScan("incident"), 2600);
   };
 
   return (
@@ -114,7 +49,7 @@ function ReportPage() {
       <PageHeader
         eyebrow="Citizen"
         title="Report Waste"
-        description="Add evidence and location. The detection engine checks nearby reports within 100 metres and 24 hours."
+        description="Add evidence and location. The detection engine will check for related reports nearby."
       />
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="card-elevated space-y-6 rounded-2xl border bg-card p-6">
@@ -122,37 +57,21 @@ function ReportPage() {
             <Label>Upload Evidence</Label>
             <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed bg-muted/40 px-4 py-10 text-center transition-colors hover:bg-muted">
               {photo ? (
-                <img
-                  src={photo}
-                  alt="Evidence preview"
-                  className="max-h-48 rounded-xl object-cover"
-                />
+                <img src={photo} alt="Evidence preview" className="max-h-48 rounded-xl object-cover" />
               ) : (
                 <>
                   <ImagePlus className="h-6 w-6 text-primary" />
                   <span className="text-sm font-medium">Click to upload a photo of the waste</span>
-                  <span className="text-xs text-muted-foreground">
-                    JPG or PNG · stored with this report
-                  </span>
+                  <span className="text-xs text-muted-foreground">JPG or PNG · used for evidence similarity</span>
                 </>
               )}
               <input
                 type="file"
-                accept="image/jpeg,image/png,image/webp"
+                accept="image/*"
                 className="hidden"
-                onChange={async (event) => {
-                  const file = event.target.files?.[0];
-                  if (!file) return;
-                  if (file.size > 1_800_000) {
-                    setError("Please choose an image smaller than 1.8 MB.");
-                    return;
-                  }
-                  try {
-                    setPhoto(await readPhoto(file));
-                    setError(null);
-                  } catch {
-                    setError("Unable to read the selected image.");
-                  }
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) setPhoto(URL.createObjectURL(file));
                 }}
               />
             </label>
@@ -166,121 +85,86 @@ function ReportPage() {
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
-                  {WASTE_CATEGORIES.map((item) => (
-                    <SelectItem key={item} value={item}>
-                      {item}
+                  {WASTE_CATEGORIES.map((c) => (
+                    <SelectItem key={c} value={c}>
+                      {c}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Severity</Label>
-              <Select
-                value={severity}
-                onValueChange={(value) => setSeverity(value as typeof severity)}
-              >
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
-                  <SelectItem value="critical">Critical</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <Label htmlFor="landmark">Landmark</Label>
-              <Input
-                id="landmark"
-                value={landmark}
-                onChange={(event) => setLandmark(event.target.value)}
-                placeholder="Nearby landmark or street"
-              />
+              <Label htmlFor="loc">Location</Label>
+              <Input id="loc" readOnly value={located ? "Main Road, Kanpur" : ""} placeholder="Not detected yet" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lat">Latitude</Label>
-              <Input
-                id="lat"
-                readOnly
-                value={located?.latitude.toFixed(6) ?? ""}
-                placeholder="Not detected yet"
-              />
+              <Input id="lat" readOnly value={located ? "26.4499" : ""} placeholder="—" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="lng">Longitude</Label>
-              <Input
-                id="lng"
-                readOnly
-                value={located?.longitude.toFixed(6) ?? ""}
-                placeholder="Not detected yet"
-              />
+              <Input id="lng" readOnly value={located ? "80.3319" : ""} placeholder="—" />
             </div>
           </div>
 
-          <Button type="button" variant="outline" onClick={locate}>
-            <Crosshair className="mr-2 h-4 w-4" /> Use My Current Location
+          <Button type="button" variant="outline" onClick={() => setLocated(true)}>
+            <Crosshair className="mr-2 h-4 w-4" /> Use Current Location
           </Button>
 
           <div className="space-y-2">
             <Label htmlFor="desc">Description</Label>
-            <Textarea
-              id="desc"
-              rows={4}
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              placeholder="Describe what you are seeing at this location…"
-            />
+            <Textarea id="desc" rows={4} placeholder="Describe what you are seeing at this location…" />
           </div>
 
           <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={submit} disabled={scan === "scanning"}>
+            <Button type="button" onClick={detect} disabled={scan === "scanning"}>
               {scan === "scanning" ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
                 <Radar className="mr-2 h-4 w-4" />
               )}
-              Submit & Detect Nearby Reports
+              Detect Nearby Reports
+            </Button>
+            <Button type="button" variant="secondary" onClick={() => setSubmitted(true)}>
+              Submit report
             </Button>
           </div>
 
-          {error ? (
-            <p className="rounded-xl border border-danger/30 bg-danger/5 p-3 text-sm text-danger">
-              {error}
-            </p>
-          ) : null}
-          {result ? (
+          {scan !== "idle" ? (
             <div className="space-y-3 rounded-2xl border bg-muted/40 p-4">
-              <p className="text-sm font-semibold">
-                Report submitted · <span className="text-primary">{result.reportCode}</span>
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {result.relatedCount} related report{result.relatedCount === 1 ? "" : "s"} found
-                within {result.rule.radiusMeters} metres.
-              </p>
-              {result.incident ? (
+              {scan === "scanning" ? (
+                <p className="flex items-center gap-2 text-sm font-medium">
+                  <Loader2 className="h-4 w-4 animate-spin" /> 🔍 Searching nearby reports…
+                </p>
+              ) : null}
+              {scan !== "scanning" ? (
+                <p className="text-sm font-semibold text-foreground">7 related reports found within this area.</p>
+              ) : null}
+              {scan === "incident" ? (
                 <div className="rounded-xl border border-danger/40 bg-danger/5 p-4">
                   <p className="flex items-center gap-2 text-sm font-bold text-danger">
-                    <Flame className="h-4 w-4" /> Waste incident created
+                    <Flame className="h-4 w-4" /> 10 related reports detected
                   </p>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    {result.incident.incidentCode} · {result.incident.reportCount} supporting
-                    reports.
+                    Waste incident created automatically — Incident #{HERO_INCIDENT.number}, {HERO_INCIDENT.confidence}%
+                    detection confidence.
                   </p>
                   <Button asChild size="sm" className="mt-3">
-                    <Link to="/admin/incidents">View incidents</Link>
+                    <Link to="/admin/incidents/$id" params={{ id: HERO_INCIDENT.id }}>
+                      View incident
+                    </Link>
                   </Button>
                 </div>
               ) : null}
-              <div className="flex flex-wrap gap-2">
-                {STATUS_FLOW.map((status, index) => (
-                  <StatusBadge
-                    key={status.key}
-                    status={status.label}
-                    className={index > (result.incident ? 2 : 0) ? "opacity-40" : ""}
-                  />
+            </div>
+          ) : null}
+
+          {submitted ? (
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 text-sm">
+              <p className="font-semibold text-primary">Report submitted. Tracking ID #111</p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {STATUS_FLOW.map((s, i) => (
+                  <StatusBadge key={s.key} status={s.label} className={i > 2 ? "opacity-40" : ""} />
                 ))}
               </div>
             </div>
@@ -291,9 +175,7 @@ function ReportPage() {
           <div className="card-elevated rounded-2xl border bg-card p-5">
             <p className="text-sm font-semibold">📍 Location preview</p>
             <p className="mt-1 text-xs text-muted-foreground">
-              {located
-                ? `${located.latitude.toFixed(5)}, ${located.longitude.toFixed(5)}`
-                : "Tap “Use My Current Location” to place your marker"}
+              {located ? "Main Road, Kanpur · 26.4499, 80.3319" : "Tap “Use Current Location” to place your marker"}
             </p>
             <MapCanvas className="mt-4 h-64">
               {located ? <Pin x={48} y={50} priority="low" label="You" /> : null}
@@ -301,10 +183,7 @@ function ReportPage() {
               <Pin x={34} y={62} priority="medium" label="Nearby report" />
               <Pin x={72} y={70} priority="medium" label="Nearby report" />
             </MapCanvas>
-            <p className="mt-3 rounded-xl border border-dashed bg-muted/50 px-3 py-2 text-xs text-muted-foreground">
-              Browser GPS Demo Tracking · coordinates are captured from this browser and saved with
-              the report.
-            </p>
+            <PrototypeNote>Simulated map and coordinates for the prototype demo.</PrototypeNote>
           </div>
 
           <div className="card-elevated rounded-2xl border bg-card p-5">
@@ -313,10 +192,10 @@ function ReportPage() {
               className="mt-4"
               steps={[
                 { label: "Your report" },
-                { label: "100 m GPS proximity analysis" },
-                { label: "Category + 24 hour matching" },
-                { label: "Transparent related-report score" },
-                { label: "🔥 Automatic incident at 10 reports", highlight: true },
+                { label: "GPS proximity analysis" },
+                { label: "Waste category matching" },
+                { label: "Image / evidence similarity" },
+                { label: "🔥 Waste incident detected", highlight: true },
               ]}
             />
           </div>

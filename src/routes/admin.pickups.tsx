@@ -1,32 +1,57 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { SectionTitle, StatusBadge } from "@/components/jan/bits";
 import { Button } from "@/components/ui/button";
-import { getAdminIncidents } from "@/lib/admin.server";
+import { PICKUP_QUEUE } from "@/lib/jan-jagruk-data";
 
 export const Route = createFileRoute("/admin/pickups")({
-  loader: () => getAdminIncidents(),
-  head: () => ({ meta: [{ title: "Pickup Management — Jan Jagruk" }] }),
-  component: PickupManagement,
+  head: () => ({
+    meta: [
+      { title: "Pickup Management — Jan Jagruk Admin" },
+      { name: "description", content: "Assign and track waste pickup crews against detected incidents." },
+      { property: "og:title", content: "Pickup Management — Jan Jagruk Admin" },
+      { property: "og:description", content: "Pickup queue, crew assignment and completion tracking." },
+    ],
+  }),
+  component: Pickups,
 });
 
-function PickupManagement() {
-  const { incidents } = Route.useLoaderData();
+function Pickups() {
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <SectionTitle title="Pickup Management" subtitle="Assign and track operational work from real incident records" />
-      <div className="grid gap-4">
-        {incidents.map((incident) => (
-          <div key={incident.incident_code} className="card-elevated flex flex-wrap items-center justify-between gap-4 rounded-2xl border bg-card p-5">
-            <div>
-              <p className="font-semibold">{incident.incident_code} · {incident.category}</p>
-              <p className="mt-1 text-sm text-muted-foreground">{incident.report_count} related reports · {incident.vehicle_code ? `${incident.vehicle_code} · ${incident.driver_name}` : "Awaiting vehicle assignment"}</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <StatusBadge status={incident.status.replace("_", " ")} />
-              <Button asChild size="sm"><Link to="/admin/incidents/$id" params={{ id: incident.incident_code }}>Open assignment</Link></Button>
-            </div>
-          </div>
-        ))}
+      <SectionTitle title="Pickup Management" subtitle="Crew assignment against detected waste incidents" />
+      <div className="card-elevated overflow-x-auto rounded-2xl border bg-card">
+        <table className="w-full min-w-[42rem] text-sm">
+          <thead className="bg-muted/50 text-left text-xs uppercase tracking-wider text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3">Pickup ID</th>
+              <th className="px-4 py-3">Incident</th>
+              <th className="px-4 py-3">Area</th>
+              <th className="px-4 py-3">Crew</th>
+              <th className="px-4 py-3">ETA</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3" />
+            </tr>
+          </thead>
+          <tbody>
+            {PICKUP_QUEUE.map((p) => (
+              <tr key={p.id} className="border-t">
+                <td className="px-4 py-3 font-semibold">{p.id}</td>
+                <td className="px-4 py-3">{p.incident}</td>
+                <td className="px-4 py-3 text-muted-foreground">{p.area}</td>
+                <td className="px-4 py-3">{p.crew}</td>
+                <td className="px-4 py-3 text-muted-foreground">{p.eta}</td>
+                <td className="px-4 py-3">
+                  <StatusBadge status={p.state} />
+                </td>
+                <td className="px-4 py-3 text-right">
+                  <Button size="sm" variant="outline" disabled={p.state === "Resolved"}>
+                    {p.state === "Awaiting Assignment" ? "Assign crew" : "Update"}
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
