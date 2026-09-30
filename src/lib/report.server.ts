@@ -4,7 +4,6 @@ import { getDb } from "./db.server";
 
 const REPORT_RADIUS_METERS = 100;
 const REPORT_WINDOW_HOURS = 24;
-const INCIDENT_THRESHOLD = 10;
 const DEMO_USER_ID = "demo-citizen";
 
 const reportInput = z.object({
@@ -46,6 +45,18 @@ function reportCode() {
   return `JJ-REP-${new Date().getFullYear()}-${Math.floor(100000 + Math.random() * 900000)}`;
 }
 
+async function getDetectionConfig(client: { query: (query: string) => Promise<{ rows: Array<{ value: { threshold?: number; radiusMeters?: number; windowHours?: number } }> }> }) {
+  const result = await client.query(
+    "SELECT value FROM app_settings WHERE key = 'incident_detection'",
+  );
+  const value = result.rows[0]?.value ?? {};
+  return {
+    threshold: value.threshold ?? 10,
+    radiusMeters: value.radiusMeters ?? REPORT_RADIUS_METERS,
+    windowHours: value.windowHours ?? REPORT_WINDOW_HOURS,
+  };
+}
+
 async function ensureDemoCitizen() {
   const db = getDb();
   await db.query(
@@ -79,6 +90,7 @@ export const createWasteReport = createServerFn({ method: "POST" })
 
     try {
       await client.query("BEGIN");
+      const detectionConfig = await getDetectionConfig(client);
       const inserted = await client.query(
         `INSERT INTO reports
           (report_code, user_id, category, description, severity, landmark, latitude, longitude, photo_data_url)
@@ -110,9 +122,9 @@ export const createWasteReport = createServerFn({ method: "POST" })
         `SELECT id, report_code, category, latitude, longitude, created_at
          FROM reports
          WHERE category = $1
-           AND created_at >= NOW() - INTERVAL '24 hours'
-           AND id <> $2`,
-        [data.category, report.id],
+           AND created_at >= NOW() - ($2 * INTERVAL '1 hour')
+           AND id <> $3`,
+        [data.category, detectionConfig.windowHours, report.id],
       );
       const related = nearby.rows.filter(
         (candidate) =>
@@ -121,12 +133,12 @@ export const createWasteReport = createServerFn({ method: "POST" })
             data.longitude,
             candidate.latitude,
             candidate.longitude,
-          ) <= REPORT_RADIUS_METERS,
+          ) <= detectionConfig.radiusMeters,
       );
       const relatedCount = related.length + 1;
       let incident: { incidentCode: string; reportCount: number } | null = null;
 
-      if (relatedCount >= INCIDENT_THRESHOLD) {
+      if (relatedCount >= detectionConfig.threshold) {
         const existing = await client.query<{ incident_code: string; report_count: number }>(
           `SELECT i.incident_code, i.report_count
            FROM incidents i
@@ -139,8 +151,8 @@ export const createWasteReport = createServerFn({ method: "POST" })
         if (existing.rowCount === 0) {
           const created = await client.query<{ id: string; incident_code: string }>(
             `INSERT INTO incidents
-              (incident_code, category, severity, latitude, longitude, report_count)
-             VALUES ($1, $2, $3, $4, $5, $6)
+              (incident_code, category, severity, latitude, longitude, report_count, status)
+             VALUES ($1, $2, $3, $4, $5, $6, 'reported')
              RETURNING id, incident_code`,
             [
               incidentCode(),
@@ -199,9 +211,9 @@ export const createWasteReport = createServerFn({ method: "POST" })
         relatedCount,
         incident,
         rule: {
-          radiusMeters: REPORT_RADIUS_METERS,
-          windowHours: REPORT_WINDOW_HOURS,
-          threshold: INCIDENT_THRESHOLD,
+          radiusMeters: detectionConfig.radiusMeters,
+          windowHours: detectionConfig.windowHours,
+          threshold: detectionConfig.threshold,
         },
       };
     } catch (error) {

@@ -21,6 +21,8 @@ import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminAnalyticsRouteImport } from './routes/admin.analytics'
 import { Route as AdminDetectionRouteImport } from './routes/admin.detection'
 import { Route as AdminHotspotsRouteImport } from './routes/admin.hotspots'
+import { Route as AdminPickupsRouteImport } from './routes/admin.pickups'
+import { Route as AdminPointsRouteImport } from './routes/admin.points'
 import { Route as AdminIncidentsIndexRouteImport } from './routes/admin.incidents.index'
 import { Route as AdminIncidentsIdRouteImport } from './routes/admin.incidents.$id'
 
@@ -84,6 +86,16 @@ const AdminHotspotsRoute = AdminHotspotsRouteImport.update({
   path: '/hotspots',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminPickupsRoute = AdminPickupsRouteImport.update({
+  id: '/pickups',
+  path: '/pickups',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPointsRoute = AdminPointsRouteImport.update({
+  id: '/points',
+  path: '/points',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminIncidentsIndexRoute = AdminIncidentsIndexRouteImport.update({
   id: '/incidents/',
   path: '/incidents/',
@@ -107,6 +119,8 @@ export interface FileRoutesByFullPath {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/detection': typeof AdminDetectionRoute
   '/admin/hotspots': typeof AdminHotspotsRoute
+  '/admin/pickups': typeof AdminPickupsRoute
+  '/admin/points': typeof AdminPointsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/incidents/$id': typeof AdminIncidentsIdRoute
   '/admin/incidents/': typeof AdminIncidentsIndexRoute
@@ -122,6 +136,8 @@ export interface FileRoutesByTo {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/detection': typeof AdminDetectionRoute
   '/admin/hotspots': typeof AdminHotspotsRoute
+  '/admin/pickups': typeof AdminPickupsRoute
+  '/admin/points': typeof AdminPointsRoute
   '/admin': typeof AdminIndexRoute
   '/admin/incidents/$id': typeof AdminIncidentsIdRoute
   '/admin/incidents': typeof AdminIncidentsIndexRoute
@@ -139,6 +155,8 @@ export interface FileRoutesById {
   '/admin/analytics': typeof AdminAnalyticsRoute
   '/admin/detection': typeof AdminDetectionRoute
   '/admin/hotspots': typeof AdminHotspotsRoute
+  '/admin/pickups': typeof AdminPickupsRoute
+  '/admin/points': typeof AdminPointsRoute
   '/admin/': typeof AdminIndexRoute
   '/admin/incidents/$id': typeof AdminIncidentsIdRoute
   '/admin/incidents/': typeof AdminIncidentsIndexRoute
@@ -157,6 +175,8 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/detection'
     | '/admin/hotspots'
+    | '/admin/pickups'
+    | '/admin/points'
     | '/admin/'
     | '/admin/incidents/$id'
     | '/admin/incidents/'
@@ -172,6 +192,8 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/detection'
     | '/admin/hotspots'
+    | '/admin/pickups'
+    | '/admin/points'
     | '/admin'
     | '/admin/incidents/$id'
     | '/admin/incidents'
@@ -188,6 +210,8 @@ export interface FileRouteTypes {
     | '/admin/analytics'
     | '/admin/detection'
     | '/admin/hotspots'
+    | '/admin/pickups'
+    | '/admin/points'
     | '/admin/'
     | '/admin/incidents/$id'
     | '/admin/incidents/'
@@ -290,6 +314,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminHotspotsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/pickups': {
+      id: '/admin/pickups'
+      path: '/pickups'
+      fullPath: '/admin/pickups'
+      preLoaderRoute: typeof AdminPickupsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/points': {
+      id: '/admin/points'
+      path: '/points'
+      fullPath: '/admin/points'
+      preLoaderRoute: typeof AdminPointsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/incidents/': {
       id: '/admin/incidents/'
       path: '/incidents'
@@ -311,6 +349,8 @@ interface AdminRouteChildren {
   AdminAnalyticsRoute: typeof AdminAnalyticsRoute
   AdminDetectionRoute: typeof AdminDetectionRoute
   AdminHotspotsRoute: typeof AdminHotspotsRoute
+  AdminPickupsRoute: typeof AdminPickupsRoute
+  AdminPointsRoute: typeof AdminPointsRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminIncidentsIdRoute: typeof AdminIncidentsIdRoute
   AdminIncidentsIndexRoute: typeof AdminIncidentsIndexRoute
@@ -320,6 +360,8 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminAnalyticsRoute: AdminAnalyticsRoute,
   AdminDetectionRoute: AdminDetectionRoute,
   AdminHotspotsRoute: AdminHotspotsRoute,
+  AdminPickupsRoute: AdminPickupsRoute,
+  AdminPointsRoute: AdminPointsRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminIncidentsIdRoute: AdminIncidentsIdRoute,
   AdminIncidentsIndexRoute: AdminIncidentsIndexRoute,

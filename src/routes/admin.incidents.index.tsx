@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { PriorityBadge, SectionTitle, StatusBadge } from "@/components/jan/bits";
 import { Button } from "@/components/ui/button";
-import { INCIDENTS } from "@/lib/jan-jagruk-data";
+import { getAdminIncidents } from "@/lib/admin.server";
 
 export const Route = createFileRoute("/admin/incidents/")({
+  loader: () => getAdminIncidents(),
   head: () => ({
     meta: [
       { title: "Waste Incidents — Jan Jagruk" },
@@ -16,6 +17,8 @@ export const Route = createFileRoute("/admin/incidents/")({
 });
 
 function IncidentsList() {
+  const { incidents } = Route.useLoaderData();
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       <SectionTitle title="Waste Incidents" subtitle="Clusters raised by the smart detection engine" />
@@ -34,22 +37,24 @@ function IncidentsList() {
             </tr>
           </thead>
           <tbody>
-            {INCIDENTS.map((i) => (
+            {incidents.map((i) => (
               <tr key={i.id} className="border-t">
-                <td className="px-4 py-3 font-semibold">#{i.number}</td>
+                <td className="px-4 py-3 font-semibold">{i.incident_code}</td>
                 <td className="px-4 py-3">{i.category}</td>
-                <td className="px-4 py-3 text-muted-foreground">{i.address}</td>
-                <td className="px-4 py-3">{i.relatedReports}</td>
-                <td className="px-4 py-3 font-medium">{i.confidence}%</td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {Number(i.latitude).toFixed(4)}, {Number(i.longitude).toFixed(4)}
+                </td>
+                <td className="px-4 py-3">{i.report_count}</td>
+                <td className="px-4 py-3 font-medium">{i.severity}</td>
                 <td className="px-4 py-3">
-                  <PriorityBadge priority={i.priority} />
+                  <PriorityBadge priority={i.severity === "critical" || i.severity === "high" ? "high" : "medium"} />
                 </td>
                 <td className="px-4 py-3">
-                  <StatusBadge status={i.status} />
+                  <StatusBadge status={i.status.replace("_", " ")} />
                 </td>
                 <td className="px-4 py-3 text-right">
                   <Button asChild size="sm" variant="outline">
-                    <Link to="/admin/incidents/$id" params={{ id: i.id }}>
+                    <Link to="/admin/incidents/$id" params={{ id: i.incident_code }}>
                       Open
                     </Link>
                   </Button>
