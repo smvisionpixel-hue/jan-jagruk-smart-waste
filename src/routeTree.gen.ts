@@ -17,6 +17,8 @@ import { Route as MyReportsRouteImport } from './routes/my-reports'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as SegregateRouteImport } from './routes/segregate'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
+import { Route as AdminDetectionRouteImport } from './routes/admin.detection'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -58,37 +60,52 @@ const SegregateRoute = SegregateRouteImport.update({
   path: '/segregate',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminDetectionRoute = AdminDetectionRouteImport.update({
+  id: '/detection',
+  path: '/detection',
+  getParentRoute: () => AdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
+  '/admin/detection': typeof AdminDetectionRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
+  '/admin/detection': typeof AdminDetectionRoute
+  '/admin': typeof AdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRoute
+  '/admin': typeof AdminRouteWithChildren
   '/dashboard': typeof DashboardRoute
   '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
   '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
+  '/admin/detection': typeof AdminDetectionRoute
+  '/admin/': typeof AdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -101,16 +118,19 @@ export interface FileRouteTypes {
     | '/profile'
     | '/report'
     | '/segregate'
+    | '/admin/detection'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/dashboard'
     | '/hotspots'
     | '/my-reports'
     | '/profile'
     | '/report'
     | '/segregate'
+    | '/admin/detection'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -121,11 +141,13 @@ export interface FileRouteTypes {
     | '/profile'
     | '/report'
     | '/segregate'
+    | '/admin/detection'
+    | '/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRoute
+  AdminRoute: typeof AdminRouteWithChildren
   DashboardRoute: typeof DashboardRoute
   HotspotsRoute: typeof HotspotsRoute
   MyReportsRoute: typeof MyReportsRoute
@@ -192,12 +214,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SegregateRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/detection': {
+      id: '/admin/detection'
+      path: '/detection'
+      fullPath: '/admin/detection'
+      preLoaderRoute: typeof AdminDetectionRouteImport
+      parentRoute: typeof AdminRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminDetectionRoute: typeof AdminDetectionRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminDetectionRoute: AdminDetectionRoute,
+  AdminIndexRoute: AdminIndexRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRoute,
+  AdminRoute: AdminRouteWithChildren,
   DashboardRoute: DashboardRoute,
   HotspotsRoute: HotspotsRoute,
   MyReportsRoute: MyReportsRoute,
