@@ -10,15 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as HotspotsRouteImport } from './routes/hotspots'
 import { Route as MyReportsRouteImport } from './routes/my-reports'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReportRouteImport } from './routes/report'
 import { Route as SegregateRouteImport } from './routes/segregate'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -36,6 +43,11 @@ const MyReportsRoute = MyReportsRouteImport.update({
   path: '/my-reports',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ReportRoute = ReportRouteImport.update({
   id: '/report',
   path: '/report',
@@ -49,51 +61,75 @@ const SegregateRoute = SegregateRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
+  '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
+  '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/dashboard': typeof DashboardRoute
   '/hotspots': typeof HotspotsRoute
   '/my-reports': typeof MyReportsRoute
+  '/profile': typeof ProfileRoute
   '/report': typeof ReportRoute
   '/segregate': typeof SegregateRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/dashboard' | '/hotspots' | '/my-reports' | '/report' | '/segregate'
-  fileRoutesByTo: FileRoutesByTo
-  to:
-    '/' | '/dashboard' | '/hotspots' | '/my-reports' | '/report' | '/segregate'
-  id:
-    | '__root__'
     | '/'
+    | '/admin'
     | '/dashboard'
     | '/hotspots'
     | '/my-reports'
+    | '/profile'
+    | '/report'
+    | '/segregate'
+  fileRoutesByTo: FileRoutesByTo
+  to:
+    | '/'
+    | '/admin'
+    | '/dashboard'
+    | '/hotspots'
+    | '/my-reports'
+    | '/profile'
+    | '/report'
+    | '/segregate'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/dashboard'
+    | '/hotspots'
+    | '/my-reports'
+    | '/profile'
     | '/report'
     | '/segregate'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   DashboardRoute: typeof DashboardRoute
   HotspotsRoute: typeof HotspotsRoute
   MyReportsRoute: typeof MyReportsRoute
+  ProfileRoute: typeof ProfileRoute
   ReportRoute: typeof ReportRoute
   SegregateRoute: typeof SegregateRoute
 }
@@ -105,6 +141,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -128,6 +171,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyReportsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/report': {
       id: '/report'
       path: '/report'
@@ -147,9 +197,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   DashboardRoute: DashboardRoute,
   HotspotsRoute: HotspotsRoute,
   MyReportsRoute: MyReportsRoute,
+  ProfileRoute: ProfileRoute,
   ReportRoute: ReportRoute,
   SegregateRoute: SegregateRoute,
 }
